@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -15,9 +14,5 @@ func CarregarTemplates() {
 
 // ExecutarTemplate executa/renderiza um template na tela
 func ExecutarTemplate(w http.ResponseWriter, template string, dados interface{}) {
-	for _, tmpl := range templates.Templates() {
-		fmt.Println(tmpl.Name())
-	}
 	templates.ExecuteTemplate(w, template, dados)
-
 }

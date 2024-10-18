@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/paulochiaradia/devbook/src/autenticacao"
 	"github.com/paulochiaradia/devbook/src/banco"
@@ -52,6 +53,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token, _ := autenticacao.CriarToken(usuarioNoBanco.ID)
-	w.Write([]byte(token))
-
+	usuarioID := strconv.FormatUint(usuarioNoBanco.ID, 10)
+	respostas.JSON(w, http.StatusOK, models.DadosAutenticacao{ID: usuarioID, Token: token})
 }

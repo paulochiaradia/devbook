@@ -13,7 +13,7 @@ var rotasUsuarios = []Rotas{
 		URI:                "/usuarios",
 		Metodo:             http.MethodPost,
 		Funcao:             controllers.CriarUsuario,
-		RequerAutenticacao: true,
+		RequerAutenticacao: false,
 	},
 	//Busca todos os usuarios no banco
 	{
@@ -27,7 +27,7 @@ var rotasUsuarios = []Rotas{
 		URI:                "/usuario/{usuarioID}",
 		Metodo:             http.MethodGet,
 		Funcao:             controllers.BuscaUsuario,
-		RequerAutenticacao: false,
+		RequerAutenticacao: true,
 	},
 	//Atualiza um usuario no banco
 	{
