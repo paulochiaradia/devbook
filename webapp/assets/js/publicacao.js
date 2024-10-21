@@ -1,8 +1,11 @@
-$('#nova-publicacao').on('submit', criariPublicacao);
-$(document).on('click', '.curtir-publicacao', curtirPublicacao)
-$(document).on('click', '.descurtir-publicacao', descurtirPublicacao) 
+$('#nova-publicacao').on('submit', criarPublicacao);
+$(document).on('click', '.curtir-publicacao', curtirPublicacao);
+$(document).on('click', '.descurtir-publicacao', descurtirPublicacao) ;
+$('#atualizar-publicacao').on('click', atualizarPublicacao);
+$('.deletar-publicacao').on('click', deletarPublicacao);
 
-function criariPublicacao(event) {
+
+function criarPublicacao(event) {
     event.preventDefault();
   
     $.ajax({
@@ -47,7 +50,6 @@ function curtirPublicacao(event) {
     })
 }
 
-
 function descurtirPublicacao(event) {
     event.preventDefault();
 
@@ -70,6 +72,47 @@ function descurtirPublicacao(event) {
         elementoClicado.addClass('curtir-publicacao');
     }).fail(function(){
         alert("Erro ao descurtir a publicacao")
+    }).always(function(){
+        elementoClicado.prop('disabled', false);
+    })
+}
+
+function atualizarPublicacao(){
+    $(this).prop('disabled', true)
+    const publicacaoID = $(this).data('publicacao-id');
+    $.ajax({
+        url: `/publicacoes/${publicacaoID}`,
+        method : "PUT",
+        data: {
+            titulo: $('#titulo').val(),
+            conteudo: $('#conteudo').val(),
+        }
+    }).done(function(){
+        alert("Publicacao editada com sucesso")
+    }).fail(function(){
+        alert("Erro ao editar publicacao")
+    }).always(function(){
+        $('#atualizar-publicacao').prop('disabled', false)
+    })
+}
+
+function deletarPublicacao(event){
+    event.preventDefault();
+
+    const elementoClicado = $(event.target);
+    const publicacao = elementoClicado.closest(".jumbotron-style");
+    const publicacaoID = publicacao.data("publicacao-id");
+    
+    elementoClicado.prop('disabled', true);
+    $.ajax({
+        url :`/publicacoes/${publicacaoID}`,
+        method: "DELETE"
+    }).done(function(){
+        publicacao.fadeOut("slow", function(){
+            $(this).remove();
+        });
+    }).fail(function(){
+        alert("Erro ao excluir a publicacao")
     }).always(function(){
         elementoClicado.prop('disabled', false);
     })

@@ -110,3 +110,76 @@ func DescurtirPublicacao(w http.ResponseWriter, r *http.Request) {
 	respostas.JSON(w, resposta.StatusCode, nil)
 
 }
+
+func AtualizarPublicacao(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	publicacaoID, erro := strconv.ParseUint(parametros["publicacaoID"], 10, 64)
+	if erro != nil {
+		respostas.JSON(w, http.StatusBadRequest, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+
+	r.ParseForm()
+
+	publicacao, erro := json.Marshal(map[string]string{
+		"titulo":   r.FormValue("titulo"),
+		"conteudo": r.FormValue("conteudo"),
+	})
+
+	if erro != nil {
+		respostas.JSON(w, http.StatusBadRequest, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/publicacoes/%d", config.APIURL, publicacaoID)
+	resposta, erro := requisicoes.FazerRequisicaoComAutenticacao(r, http.MethodPut, url, bytes.NewBuffer(publicacao))
+	if erro != nil {
+		respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: erro.Error()})
+			return
+		}
+	}(resposta.Body)
+
+	if resposta.StatusCode >= 400 {
+		respostas.TratarStatusCodeDeErro(w, resposta)
+		return
+	}
+
+	respostas.JSON(w, resposta.StatusCode, nil)
+
+}
+
+func DeletarPublicacao(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	publicacaoID, erro := strconv.ParseUint(parametros["publicacaoID"], 10, 64)
+	if erro != nil {
+		respostas.JSON(w, http.StatusBadRequest, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/publicacoes/%d", config.APIURL, publicacaoID)
+	resposta, erro := requisicoes.FazerRequisicaoComAutenticacao(r, http.MethodDelete, url, nil)
+	if erro != nil {
+		respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: erro.Error()})
+			return
+		}
+	}(resposta.Body)
+
+	if resposta.StatusCode >= 400 {
+		respostas.TratarStatusCodeDeErro(w, resposta)
+		return
+	}
+
+	respostas.JSON(w, resposta.StatusCode, nil)
+}

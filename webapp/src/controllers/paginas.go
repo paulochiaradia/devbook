@@ -65,7 +65,7 @@ func CarregarPaginaPrincipal(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func CarregarPaginaDeEdicaoDePublicaco(w http.ResponseWriter, r *http.Request) {
+func CarregarPaginaDeAtualizacaoDePublicacao(w http.ResponseWriter, r *http.Request) {
 	parametros := mux.Vars(r)
 	publicacaoId, erro := strconv.ParseUint(parametros["publicacaoID"], 10, 64)
 	if erro != nil {
@@ -102,3 +102,4 @@ func CarregarPaginaDeEdicaoDePublicaco(w http.ResponseWriter, r *http.Request) {
 	utils.ExecutarTemplate(w, "atualizar-publicacao.html", publicacao)
 
 }
+
