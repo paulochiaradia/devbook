@@ -11,7 +11,7 @@ function criariPublicacao(event) {
         conteudo: $('#conteudo').val()
        } 
     }).done(function(){
-        alert('Publicação criada com sucesso!');
+        window.location = "/home";
     }).fail(function(){
         alert('Falha ao criar publicação!');
     });

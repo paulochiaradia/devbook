@@ -3,12 +3,15 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"strconv"
+
 	"github.com/paulochiaradia/devbook/webapp/src/config"
+	"github.com/paulochiaradia/devbook/webapp/src/cookies"
 	"github.com/paulochiaradia/devbook/webapp/src/modelos"
 	"github.com/paulochiaradia/devbook/webapp/src/requisicoes"
 	"github.com/paulochiaradia/devbook/webapp/src/respostas"
-	"io"
-	"net/http"
 
 	"github.com/paulochiaradia/devbook/webapp/src/utils"
 )
@@ -49,6 +52,15 @@ func CarregarPaginaPrincipal(w http.ResponseWriter, r *http.Request) {
 		respostas.JSON(w, http.StatusUnprocessableEntity, respostas.ErroAPI{Erro: erro.Error()})
 		return
 	}
-	utils.ExecutarTemplate(w, "home.html", publicacoes)
+
+	cookie, _ := cookies.Ler(r)
+	usuarioID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+	utils.ExecutarTemplate(w, "home.html", struct {
+		Publicacoes []modelos.Publicacao
+		UsuarioID   uint64
+	}{
+		Publicacoes: publicacoes,
+		UsuarioID:   usuarioID,
+	})
 
 }
