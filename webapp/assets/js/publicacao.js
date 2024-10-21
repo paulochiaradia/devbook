@@ -26,13 +26,19 @@ function curtirPublicacao(event) {
     const publicacaoDiv = elementoClicado.closest(".jumbotron-style");
     const publicacaoID = publicacaoDiv.data("publicacao-id");
     
+    elementoClicado.prop('disabled', true)
     $.ajax({
         url :`/publicacoes/${publicacaoID}/curtir`,
         method: "POST"
     }).done(function(){
-        alert("Publicaco curtida");
+        const contadorDeCurtidas = elementoClicado.next("span");
+        const quantidadeDeCurtidas = parseInt(contadorDeCurtidas.text());
+
+        contadorDeCurtidas.text(quantidadeDeCurtidas+1)
     }).fail(function(){
         alert("Erro ao curtir a publicacao")
+    }).always(function(){
+        elementoClicado.prop('disabled', false)
     })
 
 
