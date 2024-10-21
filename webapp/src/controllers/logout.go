@@ -8,5 +8,5 @@ import (
 
 func FazerLogout(w http.ResponseWriter, r *http.Request) {
 	cookies.Deletar(w)
-	http.Redirect(w, r, "/login", 302)
+	http.Redirect(w, r, "/login", http.StatusFound)
 }
