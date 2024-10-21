@@ -17,7 +17,6 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	fmt.Println(r.FormValue("nome"))
 
 	usuario, erro := json.Marshal(map[string]string{
 		"nome":  r.FormValue("nome"),

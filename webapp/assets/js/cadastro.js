@@ -1,25 +1,52 @@
-$('#formulario-cadastro').on('submit',criarUsuario);
+$('#formulario-cadastro').on('submit', criarUsuario);
 
 function criarUsuario(event){
     event.preventDefault();
-    console.log("Esta funcionando");
-
     if ($('#senha').val() !== $('#confirmar-senha').val()){
-        alert('As senhas não conferem');
+        Swal.fire({
+            title: "Ops....",
+            text: "As senhas não são iguais",
+            icon: "error"
+        });
+    } else {
+        $.ajax({
+            url: '/usuarios',
+            method: 'POST',
+            data: {
+                nome: $('#nome').val(),
+                email: $('#email').val(),
+                nick: $('#nick').val(),
+                senha: $('#senha').val()
+            }
+        }).done(function () {
+            Swal.fire({
+                title: "Sucesso!",
+                text: "Usuário cadastrado com sucesso!",
+                icon: "success"
+            }).then(function () {
+                $.ajax({
+                    url: '/login',
+                    method: 'POST',
+                    data: {
+                        email: $('#email').val(),
+                        senha: $('#senha').val(),
+                    }
+                }).done(function () {
+                    window.location = "/home";
+                }).fail(function () {
+                    Swal.fire({
+                        title: "Ops....",
+                        text: "Erro ao realizar login",
+                        icon: "error"
+                    });
+                });
+            });
+        }).fail(function () {
+            Swal.fire({
+                title: "Ops....",
+                text: "Erro ao cadastrar usuário",
+                icon: "error"
+            });
+        });
     }
-    $.ajax({
-        url: '/usuarios',
-        method: 'POST',
-        data: {
-            nome: $('#nome').val(),
-            email: $('#email').val(),
-            nick: $('#nick').val(),
-            senha: $('#senha').val()
-        },
-    }).done(function (){
-        alert("Usuario Cadastrado com Sucesso")
-    }).fail(function (){
-        console.log("erro")
-        alert("Erro ao cadastrar usuario")
-    })
 }

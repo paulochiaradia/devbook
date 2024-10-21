@@ -13,6 +13,10 @@ function fazerLogin(evento){
     }).done(function(){
         window.location = "/home";
     }).fail(function (){
-     alert("Email ou senha invalido");
+        Swal.fire({
+            title: "Ops....",
+            text: "Email ou senha invalidos",
+            icon: "error"
+        });
     })
 }
