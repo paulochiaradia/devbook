@@ -1,8 +1,9 @@
 package rotas
 
 import (
-	"github.com/paulochiaradia/devbook/webapp/src/middlewares"
 	"net/http"
+
+	"github.com/paulochiaradia/devbook/webapp/src/middlewares"
 
 	"github.com/gorilla/mux"
 )
@@ -20,6 +21,7 @@ func Configurar(router *mux.Router) *mux.Router {
 	rotas := rotasLogin
 	rotas = append(rotas, rotasUsuario...)
 	rotas = append(rotas, rotaPaginaPrincipal)
+	rotas = append(rotas, rotasPublicacoes...)
 
 	for _, rota := range rotas {
 		if rota.RequerAutenticacao {

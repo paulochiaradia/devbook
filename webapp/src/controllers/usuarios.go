@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/paulochiaradia/devbook/webapp/src/config"
-	"github.com/paulochiaradia/devbook/webapp/src/respostas"
 	"io"
 	"net/http"
+
+	"github.com/paulochiaradia/devbook/webapp/src/config"
+	"github.com/paulochiaradia/devbook/webapp/src/respostas"
 )
 
 // CriarUsuario chama a API para cadastrar um usuario no banco de dados
@@ -16,6 +17,7 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+	fmt.Println(r.FormValue("nome"))
 
 	usuario, erro := json.Marshal(map[string]string{
 		"nome":  r.FormValue("nome"),
@@ -42,6 +44,8 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}(resposta.Body)
+
+	//fmt.Println(resposta.StatusCode, resposta.Request)
 
 	if resposta.StatusCode >= 400 {
 		respostas.TratarStatusCodeDeErro(w, resposta)
