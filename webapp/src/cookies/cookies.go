@@ -1,9 +1,11 @@
 package cookies
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/gorilla/securecookie"
 	"github.com/paulochiaradia/devbook/webapp/src/config"
-	"net/http"
 )
 
 var s *securecookie.SecureCookie
@@ -42,4 +44,14 @@ func Ler(r *http.Request) (map[string]string, error) {
 		return nil, erro
 	}
 	return valores, nil
+}
+
+func Deletar(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "dados",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  time.Unix(0, 0),
+	})
 }
