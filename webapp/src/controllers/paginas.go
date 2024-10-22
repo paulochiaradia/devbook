@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/paulochiaradia/devbook/webapp/src/config"
@@ -106,4 +107,47 @@ func CarregarPaginaDeAtualizacaoDePublicacao(w http.ResponseWriter, r *http.Requ
 
 	utils.ExecutarTemplate(w, "atualizar-publicacao.html", publicacao)
 
+}
+
+func CarregarPaginaDeUsuarios(w http.ResponseWriter, r *http.Request) {
+	nomeOuNick := strings.ToLower(r.URL.Query().Get("usuario"))
+	url := fmt.Sprintf("%s/usuarios?usuario=%s", config.APIURL, nomeOuNick)
+	resposta, erro := requisicoes.FazerRequisicaoComAutenticacao(r, http.MethodGet, url, nil)
+	if erro != nil {
+		respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: erro.Error()})
+			return
+		}
+	}(resposta.Body)
+
+	if resposta.StatusCode >= 400 {
+		respostas.TratarStatusCodeDeErro(w, resposta)
+		return
+	}
+
+	var usuarios []modelos.Usuario
+
+	if erro := json.NewDecoder(resposta.Body).Decode(&usuarios); erro != nil {
+		respostas.JSON(w, http.StatusUnprocessableEntity, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+
+	utils.ExecutarTemplate(w, "usuarios.html", usuarios)
+}
+
+func CarregarPerfilDeUsuarios(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseUint(parametros["usuarioID"], 10, 64)
+	if erro != nil {
+		respostas.JSON(w, http.StatusBadRequest, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+	usuario, erro := modelos.BuscarUsuarioCompleto(usuarioID, r)
+	fmt.Println(usuario, erro)
 }
