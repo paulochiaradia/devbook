@@ -51,4 +51,16 @@ var rotasUsuario = []Rota{
 		Funcao:             controllers.CarregarPerfilDeUsuarioLogado,
 		RequerAutenticacao: true,
 	},
+	{
+		URI:                "/editar-usuario",
+		Metodo:             http.MethodGet,
+		Funcao:             controllers.CarregarPaginaDePerfilDeUsuario,
+		RequerAutenticacao: true,
+	},
+	{
+		URI:                "/editar-usuario",
+		Metodo:             http.MethodPut,
+		Funcao:             controllers.EditarUsuario,
+		RequerAutenticacao: true,
+	},
 }
