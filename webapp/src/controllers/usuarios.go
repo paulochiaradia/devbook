@@ -192,3 +192,29 @@ func AtualizarSenha(w http.ResponseWriter, r *http.Request) {
 
 	respostas.JSON(w, resposta.StatusCode, nil)
 }
+
+func DeletarUsuario(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Ler(r)
+	usuarioID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	url := fmt.Sprintf("%s/usuario/%d", config.APIURL, usuarioID)
+	resposta, erro := requisicoes.FazerRequisicaoComAutenticacao(r, http.MethodDelete, url, nil)
+	if erro != nil {
+		respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+
+	defer func() {
+		if err := resposta.Body.Close(); err != nil {
+			log.Printf("Erro ao fechar o corpo da resposta: %v", err)
+			respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: err.Error()})
+		}
+	}()
+
+	if resposta.StatusCode >= 400 {
+		respostas.TratarStatusCodeDeErro(w, resposta)
+		return
+	}
+
+	respostas.JSON(w, resposta.StatusCode, nil)
+}

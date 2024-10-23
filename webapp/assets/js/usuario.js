@@ -2,6 +2,7 @@ $('#parar-de-seguir').on('click', pararDeSeguir);
 $('#seguir').on('click', seguir);
 $('#editar-usuario').on('submit', editar);
 $('#atualizar-senha').on('submit', atualizarSenha);
+$('#deletar-usuario').on('click', deletarUsuario);
 
 function pararDeSeguir() {
     const usuarioId = $(this).data('usuario-id');
@@ -77,4 +78,28 @@ function atualizarSenha(event){
         Swal.fire("Ops...", "Erro ao atualizar a senha!", "error");
     });
 
+}
+
+function deletarUsuario(){
+    Swal.fire({
+        title: "Atenção",
+        text: "Tem certeza que deseja apagar sua conta? É uma ação irreversível!",
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+        icon: "warning"
+    }).then(function(confirmacao){
+        if(confirmacao.value){
+            $.ajax({
+                url:`/deletar-usuario`,
+                method: `DELETE`
+            }).done(function(){
+                Swal.fire("Sucesso", "Usuário excluido com sucesso!", "success")
+                .then(function(){
+                    window.location = `/logout`;
+                })
+            }).fail(function(){
+                Swal.fire("Ops...", "Erro ao excluir o usuario!", "error")
+            });
+        }
+    });
 }
