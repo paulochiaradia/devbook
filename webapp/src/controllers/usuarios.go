@@ -157,3 +157,38 @@ func EditarUsuario(w http.ResponseWriter, r *http.Request) {
 
 	respostas.JSON(w, resposta.StatusCode, nil)
 }
+
+func AtualizarSenha(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	senhas, erro := json.Marshal(map[string]string{
+		"atual": r.FormValue("atual"),
+		"nova":  r.FormValue("nova"),
+	})
+	if erro != nil {
+		respostas.JSON(w, http.StatusBadRequest, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+	cookie, _ := cookies.Ler(r)
+	usuarioID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	url := fmt.Sprintf("%s/usuario/%d/atualizar-senha", config.APIURL, usuarioID)
+	resposta, erro := requisicoes.FazerRequisicaoComAutenticacao(r, http.MethodPost, url, bytes.NewBuffer(senhas))
+	if erro != nil {
+		respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: erro.Error()})
+		return
+	}
+
+	defer func() {
+		if err := resposta.Body.Close(); err != nil {
+			log.Printf("Erro ao fechar o corpo da resposta: %v", err)
+			respostas.JSON(w, http.StatusInternalServerError, respostas.ErroAPI{Erro: err.Error()})
+		}
+	}()
+
+	if resposta.StatusCode >= 400 {
+		respostas.TratarStatusCodeDeErro(w, resposta)
+		return
+	}
+
+	respostas.JSON(w, resposta.StatusCode, nil)
+}
